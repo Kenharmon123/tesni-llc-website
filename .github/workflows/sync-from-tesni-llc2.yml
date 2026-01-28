@@ -1,0 +1,33 @@
+name: Sync from TesniLLC2
+
+on:
+  workflow_dispatch:
+  
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout TesniLLC2
+        uses: actions/checkout@v4
+        with:
+          repository: Kenharmon123/TesniLLC2
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: source
+          
+      - name: Checkout target repo
+        uses: actions/checkout@v4
+        with:
+          path: target
+          
+      - name: Sync files
+        run: |
+          rm -rf target/*
+          cp -r source/* target/
+          rm -rf target/.git
+          rm -rf target/.github
+          cd target
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add .
+          git commit -m "Sync from TesniLLC2" || echo "No changes to commit"
+          git push
